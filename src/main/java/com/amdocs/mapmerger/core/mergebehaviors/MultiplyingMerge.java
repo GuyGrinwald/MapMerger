@@ -5,7 +5,7 @@ package com.amdocs.mapmerger.core.mergebehaviors;
  */
 public class MultiplyingMerge implements MergeBehavior<String, Integer> {
     @Override
-    public Integer merge(String key, Integer value1, Integer value2) {
+    public Integer merge(Integer value1, Integer value2) {
         return value1 * value2;
     }
 }
