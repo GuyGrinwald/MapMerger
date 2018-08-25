@@ -19,7 +19,7 @@ public class MapMergerTest {
     Map<String, Integer> map3 = new HashMap();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         map1.put("key1", 20);
         map1.put("key2", 30);
         map2.put("key3", 40);
@@ -32,43 +32,59 @@ public class MapMergerTest {
     public void mergeMapsByAdding() {
         MergeBehavior addingMerge = new AddingMerge();
         MapMerger<String, Integer> merger = new MapMerger<>(addingMerge);
-        Map<String, Integer> result = merger.mergeMaps(map1, map2);
 
+        Map<String, Integer> result = merger.mergeMaps(map1, map2);
         assertTrue(result.containsKey("key1"));
         assertEquals(70, result.get("key1"), 0);
+
+        Map<String, Integer> result2 = merger.mergeMaps(map1, new HashMap<>());
+        assertTrue(result2.containsKey("key1"));
+        assertEquals(20, result2.get("key1"), 0);
     }
 
     @Test
     public void mergeMapsByMultiplying() {
         MergeBehavior multiplyingMerge = new MultiplyingMerge();
         MapMerger<String, Integer> merger = new MapMerger<>(multiplyingMerge);
-        Map<String, Integer> result = merger.mergeMaps(map1, map2);
 
+        Map<String, Integer> result = merger.mergeMaps(map1, map2);
         assertTrue(result.containsKey("key1"));
         assertEquals(1000, result.get("key1"), 0);
+
+        Map<String, Integer> result2 = merger.mergeMaps(map1, new HashMap<>());
+        assertTrue(result2.containsKey("key1"));
+        assertEquals(20, result2.get("key1"), 0);
     }
 
     @Test
     public void mergeMapListByAdding() {
         MergeBehavior addingMerge = new AddingMerge();
         MapMerger<String, Integer> merger = new MapMerger<>(addingMerge);
+
         List<Map<String, Integer>> maps = Arrays.asList(map1, map2, map3);
-
         Map<String, Integer> result = merger.mergeMaps(maps);
-
         assertTrue(result.containsKey("key1"));
         assertEquals(140, result.get("key1"), 0);
+
+        List<Map<String, Integer>> maps2 = Arrays.asList(map1, map2, new HashMap<>());
+        Map<String, Integer> result2 = merger.mergeMaps(maps2);
+        assertTrue(result2.containsKey("key1"));
+        assertEquals(70, result2.get("key1"), 0);
     }
 
     @Test
     public void mergeMapListByMultiplying() {
         MergeBehavior multiplyingMerge = new MultiplyingMerge();
         MapMerger<String, Integer> merger = new MapMerger<>(multiplyingMerge);
+
         List<Map<String, Integer>> maps = Arrays.asList(map1, map2, map3);
-
         Map<String, Integer> result = merger.mergeMaps(maps);
-
         assertTrue(result.containsKey("key1"));
         assertEquals(70000, result.get("key1"), 0);
+
+        List<Map<String, Integer>> maps2 = Arrays.asList(map1, map2, new HashMap<>());
+        Map<String, Integer> result2 = merger.mergeMaps(maps2);
+        assertTrue(result2.containsKey("key1"));
+        assertEquals(1000, result2.get("key1"), 0);
     }
 }

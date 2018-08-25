@@ -1,7 +1,7 @@
 package com.amdocs.mapmerger.core;
 
 import com.amdocs.mapmerger.core.mergebehaviors.MergeBehavior;
-import com.amdocs.mapmerger.core.utils.MapUtils;
+import com.amdocs.mapmerger.core.utils.CollectionUtils;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -39,6 +39,14 @@ public class MapMerger<K, V> {
      * It's up to the caller to measure it's performance.
      */
     public Map<K, V> smallMapMerge(Map<K, V> map1, Map<K, V> map2) {
+        if (CollectionUtils.isEmpty(map1)) {
+            return map2;
+        }
+
+        if (CollectionUtils.isEmpty(map2)) {
+            return map1;
+        }
+
         ForkJoinPool forkJoinPool = new ForkJoinPool(ForkJoinPool.getCommonPoolParallelism());
 
         try {
@@ -64,6 +72,10 @@ public class MapMerger<K, V> {
      * It's up to the caller to measure it's performance.
      */
     public Map<K, V> smallMapMerge(List<Map<K, V>> maps) {
+        if (CollectionUtils.isEmpty(maps)) {
+            return new HashMap<>();
+        }
+
         ForkJoinPool forkJoinPool = new ForkJoinPool(ForkJoinPool.getCommonPoolParallelism());
 
         try {
@@ -99,6 +111,10 @@ public class MapMerger<K, V> {
 
         @Override
         protected Map<K, V> compute() {
+            if (CollectionUtils.isEmpty(maps)) {
+                return new HashMap<>();
+            }
+
             //if number of maps in the list is larger than 2, break up the list
             if(maps.size() >= WORK_THRESHOLD) {
                 List<DCMapMerger<K, V>> subtasks = new ArrayList<>();
@@ -117,12 +133,12 @@ public class MapMerger<K, V> {
         }
 
         private Map<K, V> mergeMaps(Map<K, V> map1, Map<K, V> map2) {
-            if (MapUtils.isEmpty(map1)) {
-                return  map2;
+            if (CollectionUtils.isEmpty(map1)) {
+                return map2;
             }
 
-            if (MapUtils.isEmpty(map2)) {
-                return  map1;
+            if (CollectionUtils.isEmpty(map2)) {
+                return map1;
             }
 
             Map<K, V> smallerMap = map1.size() <= map2.size() ? map1 : map2;
